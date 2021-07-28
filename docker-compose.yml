@@ -1,0 +1,64 @@
+version: "2"
+
+services:
+    dockernode:
+        # local onde está o dockerfile que será subido
+        build: .
+        depends_on:
+            - db
+
+        # comando que irá rodar no servidor
+        command: npm start
+
+        # array de portas a serem redirecionadas entre local e container
+        ports: ["4000:4000", "3000:3000"]
+
+        # copiar origem (local) para destino (container)
+        volumes:
+            - .:/usr/app
+
+        # configurar rede / ip do container
+        networks:
+            redenode:
+                ipv4_address: 10.5.0.5
+
+    db:
+        # imagem a ser utilizada
+        image: postgres
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+        volumes:
+            - ./pgdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            redenode:
+                ipv4_address: 10.5.0.6
+
+    pgadmin:
+        image: dpage/pgadmin4
+        depends_on:
+            - db
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: postgres
+            PGADMIN_SERVER_JSON_FILE: ./pgadmin.json:/pgadmin4/servers.json
+            PGADMIN_LISTEN_PORT: 5000
+        ports:
+            - "5000:5000"
+        networks:
+            redenode:
+                ipv4_address: 10.5.0.7
+
+# configura uma rede única para todos os containers compartilharem conexão
+networks:
+    redenode:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.5.0.0/16
+                  gateway: 10.5.5.1
+################################################################################
+####### RODAR O COMANDO DOCKER-COMPOSE UP PARA SUBIR O CONTAINER ###############
+################################################################################
