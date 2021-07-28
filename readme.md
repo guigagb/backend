@@ -1,4 +1,4 @@
-#API GRAPHQL + APOLLO SERVER
+# API GRAPHQL + APOLLO SERVER
 API criada com base no curso: 
 GraphQL: Criando APIs Profissionais e Flexíveis da COD3R
 
